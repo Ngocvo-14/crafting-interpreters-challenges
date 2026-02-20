@@ -1,0 +1,104 @@
+// ============================================================
+// Challenge 1 — Conditional Execution Without 'if'
+//
+// Goal: implement branching using only first-class functions
+// and dynamic dispatch (method calls on objects).
+//
+// Technique: Church-encoding / Smalltalk-style booleans.
+//   - Create a BoolBase class with an ifElse(thenFn, elseFn) method.
+//   - TrueVal.ifElse() calls thenFn(); FalseVal.ifElse() calls elseFn().
+//   - The method lookup IS the branch — no 'if' keyword needed.
+//
+// Analogous language: Smalltalk
+//   In Smalltalk, `true ifTrue: [...]` is simply a message send to the
+//   True object. There is no built-in branching syntax at all.
+// ============================================================
+
+print "=== Challenge 1: Conditional via Dynamic Dispatch ===";
+print "";
+
+class BoolBase {
+    // Default: subclasses override this
+    ifElse(thenFn, elseFn) {
+        // overridden below
+        return nil;
+    }
+}
+
+class TrueVal < BoolBase {
+    // A "true" object always calls the thenFn
+    ifElse(thenFn, elseFn) {
+        return thenFn();
+    }
+}
+
+class FalseVal < BoolBase {
+    // A "false" object always calls the elseFn
+    ifElse(thenFn, elseFn) {
+        return elseFn();
+    }
+}
+
+// -- Test 1: simple true branch ---------------------------------
+print "Test 1 - TrueVal calls thenFn:";
+var t = TrueVal();
+t.ifElse(
+    fun () { print "  PASS: thenFn was called (expected for true)"; },
+    fun () { print "  FAIL: elseFn was called (unexpected for true)"; }
+);
+
+// -- Test 2: simple false branch --------------------------------
+print "Test 2 - FalseVal calls elseFn:";
+var f = FalseVal();
+f.ifElse(
+    fun () { print "  FAIL: thenFn was called (unexpected for false)"; },
+    fun () { print "  PASS: elseFn was called (expected for false)"; }
+);
+
+// -- Test 3: returning a value from a branch --------------------
+print "Test 3 - Branch can return a value:";
+var result = t.ifElse(
+    fun () { return 42; },
+    fun () { return -1; }
+);
+if (result == 42) {
+    print "  PASS: got 42 from true branch";
+} else {
+    print "  FAIL: got " + result;
+}
+
+// -- Test 4: nested dispatch (and-like behaviour) ---------------
+print "Test 4 - Nested dispatch (both true → inner branch):";
+var outer = TrueVal();
+var inner = TrueVal();
+outer.ifElse(
+    fun () {
+        inner.ifElse(
+            fun () { print "  PASS: both true, reached inner thenFn"; },
+            fun () { print "  FAIL: inner elseFn called"; }
+        );
+    },
+    fun () { print "  FAIL: outer elseFn called"; }
+);
+
+// -- Test 5: outer false short-circuits -------------------------
+print "Test 5 - Outer false, inner never runs:";
+var outerF = FalseVal();
+var sideEffectRan = false;
+outerF.ifElse(
+    fun () {
+        // This whole block should never execute
+        sideEffectRan = true;
+        print "  FAIL: thenFn should not run";
+    },
+    fun () {
+        if (sideEffectRan) {
+            print "  FAIL: side effect leaked";
+        } else {
+            print "  PASS: thenFn skipped, elseFn ran correctly";
+        }
+    }
+);
+
+print "";
+print "Challenge 1 complete.";

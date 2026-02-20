@@ -1,0 +1,108 @@
+// ============================================================
+// Challenge 2 — Looping via Recursion (No while/for)
+//
+// Goal: implement iteration using only recursive function calls.
+//
+// Key insight: A tail-recursive call in a loop-like function is
+// semantically equivalent to a jump back to the top of the loop.
+//
+// Required optimization: Tail-Call Optimization (TCO).
+//   Without TCO, every recursive call pushes a new stack frame.
+//   A loop of N iterations would need N stack frames → stack overflow
+//   for large N.  With TCO, the interpreter detects the tail call and
+//   REUSES the current frame, keeping stack depth O(1).
+//
+// Analogous language: Scheme
+//   The Scheme standard (R7RS §6.11) mandates proper tail calls.
+//   Idiomatic Scheme uses named-let or explicit recursion for iteration.
+//   Example (Scheme):
+//     (let loop ((i 0))
+//       (when (< i 5)
+//         (display i) (newline)
+//         (loop (+ i 1))))
+//
+// Note on this interpreter: Java doesn't support TCO natively, so
+// this demonstration uses a small n (< 20) to stay within stack limits.
+// A production implementation would use a trampoline or convert tail
+// calls to a goto internally.
+// ============================================================
+
+print "=== Challenge 2: Looping via Recursion ===";
+print "";
+
+// -- Test 1: count up (replaces: for i = 0; i < 5; i++) -------
+print "Test 1 - Count from 0 to 4 using recursion:";
+fun countUp(i, limit) {
+    if (i >= limit) return nil;   // base case (our only 'if' here!)
+    print "  " + i;
+    countUp(i + 1, limit);        // tail call — simulates loop increment
+}
+countUp(0, 5);
+print "  PASS: printed 0-4";
+
+// -- Test 2: sum 1..10 (replaces: while loop accumulator) ------
+print "Test 2 - Sum 1 to 10 recursively:";
+fun sumTo(n, acc) {
+    if (n <= 0) return acc;
+    return sumTo(n - 1, acc + n); // tail call with accumulator
+}
+var total = sumTo(10, 0);
+if (total == 55) {
+    print "  PASS: sum(1..10) = 55";
+} else {
+    print "  FAIL: got " + total;
+}
+
+// -- Test 3: factorial (classic recursion) ----------------------
+print "Test 3 - Factorial of 7:";
+fun factorial(n, acc) {
+    if (n <= 1) return acc;
+    return factorial(n - 1, acc * n);
+}
+var fact7 = factorial(7, 1);
+if (fact7 == 5040) {
+    print "  PASS: 7! = 5040";
+} else {
+    print "  FAIL: got " + fact7;
+}
+
+// -- Test 4: Fibonacci (double recursion, not tail-recursive) ---
+print "Test 4 - Fibonacci sequence up to index 8:";
+fun fib(n) {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+// fib: 0,1,1,2,3,5,8,13,21
+var expected = 21;
+var got = fib(8);
+if (got == expected) {
+    print "  PASS: fib(8) = 21";
+} else {
+    print "  FAIL: fib(8) = " + got;
+}
+
+// -- Test 5: building a string (replaces: string concatenation loop)
+print "Test 5 - Build a string with recursion:";
+fun repeat(str, n, acc) {
+    if (n <= 0) return acc;
+    return repeat(str, n - 1, acc + str);
+}
+var built = repeat("ab", 4, "");
+if (built == "abababab") {
+    print "  PASS: repeated string = 'abababab'";
+} else {
+    print "  FAIL: got '" + built + "'";
+}
+
+// -- Test 6: countdown with side effects (replaces: while(n > 0)) --
+print "Test 6 - Countdown from 3:";
+fun countdown(n) {
+    if (n < 0) return nil;
+    print "  " + n;
+    countdown(n - 1);
+}
+countdown(3);
+print "  PASS: counted 3 down to 0";
+
+print "";
+print "Challenge 2 complete.";

@@ -1,0 +1,130 @@
+// ============================================================
+// Challenge 3 — break Statement
+//
+// Syntax:   breakStmt → "break" ";"
+// Semantics: jump to end of nearest enclosing loop.
+// Error:    break outside a loop is a compile-time (parse) error.
+//
+// Implementation summary:
+//   Parser  — loopDepth counter; error if loopDepth==0 at break.
+//   AST     — Stmt.Break (no fields).
+//   Runtime — visitBreakStmt throws BreakException;
+//             visitWhileStmt wraps body in try/catch(BreakException).
+//   For-loops desugar to while, so break works there for free.
+// ============================================================
+
+print "=== Challenge 3: break Statement ===";
+print "";
+
+// -- Test 1: break exits a while loop early --------------------
+print "Test 1 - break exits while loop:";
+var i = 0;
+while (i < 10) {
+    if (i == 3) break;
+    print "  i = " + i;
+    i = i + 1;
+}
+// Should print 0, 1, 2 then stop
+if (i == 3) {
+    print "  PASS: loop stopped at i=3";
+} else {
+    print "  FAIL: i ended at " + i;
+}
+
+// -- Test 2: break exits a for loop early ----------------------
+print "Test 2 - break exits for loop:";
+var stopped = -1;
+for (var j = 0; j < 100; j = j + 1) {
+    if (j == 5) {
+        stopped = j;
+        break;
+    }
+}
+if (stopped == 5) {
+    print "  PASS: for loop stopped at j=5";
+} else {
+    print "  FAIL: stopped=" + stopped;
+}
+
+// -- Test 3: break inside an if inside a loop ------------------
+print "Test 3 - break inside nested if inside loop:";
+var count = 0;
+var k = 0;
+while (k < 20) {
+    k = k + 1;
+    if (k > 3) {
+        if (k > 7) {
+            break;   // nested 2 ifs deep — should still exit the while
+        }
+        count = count + 1;
+    }
+}
+// k runs 1..7 incrementing count for 4,5,6,7 → count=4, then break at k=8
+if (count == 4 and k == 8) {
+    print "  PASS: count=" + count + ", k=" + k;
+} else {
+    print "  FAIL: count=" + count + ", k=" + k;
+}
+
+// -- Test 4: break exits only the innermost loop ---------------
+print "Test 4 - break exits only innermost loop:";
+var outerRan = 0;
+for (var outer = 0; outer < 3; outer = outer + 1) {
+    outerRan = outerRan + 1;
+    for (var inner = 0; inner < 10; inner = inner + 1) {
+        if (inner == 2) break;  // exits inner loop only
+    }
+}
+// outer loop should complete all 3 iterations
+if (outerRan == 3) {
+    print "  PASS: outer loop ran 3 times, inner break didn't escape";
+} else {
+    print "  FAIL: outer loop ran " + outerRan + " times";
+}
+
+// -- Test 5: code after the loop still executes ----------------
+print "Test 5 - execution continues after broken loop:";
+var afterLoop = false;
+var x = 0;
+while (x < 100) {
+    x = x + 1;
+    if (x == 1) break;
+}
+afterLoop = true;   // must reach this line
+if (afterLoop and x == 1) {
+    print "  PASS: code after loop ran, x=" + x;
+} else {
+    print "  FAIL: afterLoop=" + afterLoop + ", x=" + x;
+}
+
+// -- Test 6: infinite loop escaped by break --------------------
+print "Test 6 - infinite loop escaped via break:";
+var hits = 0;
+while (true) {
+    hits = hits + 1;
+    if (hits >= 5) break;
+}
+if (hits == 5) {
+    print "  PASS: escaped infinite loop after 5 hits";
+} else {
+    print "  FAIL: hits=" + hits;
+}
+
+// -- Test 7: break in a while with complex increment -----------
+print "Test 7 - break with side-effect-free skipped iterations:";
+var sum = 0;
+var n = 1;
+while (n <= 100) {
+    if (n > 10) break;
+    sum = sum + n;
+    n = n + 1;
+}
+// sum(1..10) = 55
+if (sum == 55) {
+    print "  PASS: sum of 1..10 = 55";
+} else {
+    print "  FAIL: sum=" + sum;
+}
+
+print "";
+print "Challenge 3 complete.";
