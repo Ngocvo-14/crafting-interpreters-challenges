@@ -1,0 +1,20 @@
+// test_ch11.lox
+
+// Test 1: unused variable should error
+{
+  var unused = "hello";
+}
+
+// Test 2: used variable should NOT error
+{
+  var used = "world";
+  print used;
+}
+
+// Test 3: variable used in its own initializer should error
+{
+  var a = "outer";
+  {
+    var a = a;
+  }
+}
