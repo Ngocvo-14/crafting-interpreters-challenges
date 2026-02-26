@@ -1,0 +1,7 @@
+// This file should produce a parse-time error:
+//   "Cannot use 'break' outside of a loop."
+// and NOT execute anything.
+
+print "This should never print.";
+break;
+print "This should never print either.";
