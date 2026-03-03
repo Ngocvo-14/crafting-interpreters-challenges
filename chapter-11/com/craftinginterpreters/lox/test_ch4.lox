@@ -1,0 +1,14 @@
+// test_ch4.lox - tests that variables still work correctly
+{
+  var a = "first";
+  var b = "second";
+  var c = "third";
+  print a;   // first
+  print b;   // second
+  print c;   // third
+}
+
+fun add(x, y) {
+  return x + y;
+}
+print add(10, 20);  // 30
