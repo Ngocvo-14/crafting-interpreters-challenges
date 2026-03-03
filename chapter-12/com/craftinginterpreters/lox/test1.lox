@@ -1,0 +1,49 @@
+// Test 1: Basic static method
+class Math {
+  class square(n) {
+    return n * n;
+  }
+}
+print Math.square(3);   // expect: 9
+print Math.square(5);   // expect: 25
+
+// Test 2: Static method stored in variable
+var fn = Math.square;
+print fn(4);            // expect: 16
+
+// Test 3: Static and instance methods coexist
+class Counter {
+  class description() {
+    return "I am a counter class.";
+  }
+  init(start) {
+    this.count = start;
+  }
+  increment() {
+    this.count = this.count + 1;
+  }
+  value() {
+    return this.count;
+  }
+}
+print Counter.description();   // expect: I am a counter class.
+var c = Counter(0);
+c.increment();
+c.increment();
+print c.value();               // expect: 2
+
+// Test 4: Static methods cannot use 'this' (should give resolver error)
+class Bad {
+  class broken() {
+    return this.x;  // Error: Can't use 'this' outside of a class method
+  }
+}
+
+// Test 5: Inherited static methods do NOT carry over (static = on the class object)
+class Animal {
+  class create() {
+    return "animal";
+  }
+}
+class Dog < Animal {}
+// Dog.create() should throw runtime error — static methods don't inherit

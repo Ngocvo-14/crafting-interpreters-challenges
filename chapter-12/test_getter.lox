@@ -1,0 +1,144 @@
+// Test 1: Basic getter
+class Circle {
+  init(radius) {
+    this.radius = radius;
+  }
+
+  area {
+    return 3.141592653 * this.radius * this.radius;
+  }
+
+  circumference {
+    return 2 * 3.141592653 * this.radius;
+  }
+}
+
+print "=== Test 1: Basic Getter ===";
+var circle = Circle(4);
+print circle.area;          // Should print ~50.2655
+print circle.circumference; // Should print ~25.1327
+
+// Test 2: Getter with this
+class Rectangle {
+  init(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  area {
+    return this.width * this.height;
+  }
+
+  perimeter {
+    return 2 * (this.width + this.height);
+  }
+}
+
+print "";
+print "=== Test 2: Multiple Getters ===";
+var rect = Rectangle(5, 10);
+print rect.area;      // Should print 50
+print rect.perimeter; // Should print 30
+
+// Test 3: Getter that modifies state
+class Counter {
+  init() {
+    this.count = 0;
+  }
+
+  increment {
+    this.count = this.count + 1;
+    return this.count;
+  }
+
+  current {
+    return this.count;
+  }
+}
+
+print "";
+print "=== Test 3: Getters with Side Effects ===";
+var counter = Counter();
+print counter.current;    // 0
+print counter.increment;  // 1
+print counter.increment;  // 2
+print counter.current;    // 2
+
+// Test 4: Mix getters and regular methods
+class Person {
+  init(first, last, birthYear) {
+    this.firstName = first;
+    this.lastName = last;
+    this.birthYear = birthYear;
+  }
+
+  fullName {
+    return this.firstName + " " + this.lastName;
+  }
+
+  age {
+    return 2024 - this.birthYear;
+  }
+
+  greet(name) {
+    return "Hello " + name + ", I'm " + this.firstName;
+  }
+}
+
+print "";
+print "=== Test 4: Mix Getters and Methods ===";
+var person = Person("Alice", "Smith", 1990);
+print person.fullName;        // Alice Smith (getter, no parens)
+print person.age;             // 34 (getter, no parens)
+print person.greet("Bob");    // Hello Bob, I'm Alice (method, with parens)
+
+// Test 5: Nested property access
+class Math {
+  pi {
+    return 3.141592653;
+  }
+
+  e {
+    return 2.718281828;
+  }
+}
+
+class Circle2 {
+  init(radius) {
+    this.radius = radius;
+    this.math = Math();
+  }
+
+  area {
+    return this.math.pi * this.radius * this.radius;
+  }
+}
+
+print "";
+print "=== Test 5: Nested Getters ===";
+var circle2 = Circle2(5);
+print circle2.area;  // Should use nested getter for pi
+
+// Test 6: Comparison with regular method
+class Temperature {
+  init(celsius) {
+    this.celsius = celsius;
+  }
+
+  fahrenheit {
+    return this.celsius * 9 / 5 + 32;
+  }
+
+  describe() {
+    return "Temperature is " + this.celsius + "C";
+  }
+}
+
+print "";
+print "=== Test 6: Getter vs Method ===";
+var temp = Temperature(20);
+print temp.fahrenheit;     // 68 (getter - no parens)
+print temp.describe();     // Temperature is 20C (method - with parens)
+
+print "";
+print "=== All Tests Complete ===";
