@@ -1,0 +1,25 @@
+class Serializable {
+  serialize() {
+    return "object:" + this.name;
+  }
+  describe() {
+    return "I am " + this.name;
+  }
+}
+
+class Loggable {
+  log() {
+    print "LOG: " + this.name;
+  }
+}
+
+class Animal mixin Serializable mixin Loggable {
+  init(name) {
+    this.name = name;
+  }
+}
+
+var a = Animal("Cat");
+print a.serialize();
+print a.describe();
+a.log();

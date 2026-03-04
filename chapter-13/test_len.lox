@@ -1,0 +1,6 @@
+print len("hello");        // 5
+print len("");             // 0
+print len("Crafting!");    // 9
+
+var word = "Lox";
+print len(word);           // 3
