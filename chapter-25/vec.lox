@@ -1,0 +1,69 @@
+// ============================================================
+// Challenge 3: 2D Vector "objects" using closures
+//
+// A famous koan: "objects are a poor man's closure".
+// We demonstrate the reverse: closures can model objects.
+//
+// vec(x, y) returns a "dispatch function". You call it with
+// a string method name to get the corresponding method back.
+// This simulates message-passing OOP entirely with closures.
+// ============================================================
+
+fun vec(x, y) {
+  // "Methods" are closures that capture x and y.
+  fun getX()       { return x; }
+  fun getY()       { return y; }
+  fun toString()   { return "(" + str(x) + ", " + str(y) + ")"; }
+
+  fun add(other) {
+    // Call the other vector's getX and getY methods.
+    return vec(x + other("getX")(), y + other("getY")());
+  }
+
+  // The dispatch function: takes a method name, returns the method.
+  fun dispatch(method) {
+    if (method == "getX")     return getX;
+    if (method == "getY")     return getY;
+    if (method == "toString") return toString;
+    if (method == "add")      return add;
+    print "Unknown method: " + method;
+    return nil;
+  }
+  return dispatch;
+}
+
+// Helper: print a vector
+fun printVec(v) {
+  print v("toString")();
+}
+
+// Create two vectors
+var v1 = vec(3, 4);
+var v2 = vec(1, 2);
+
+// Access x and y coordinates
+print v1("getX")();
+print v1("getY")();
+print v2("getX")();
+print v2("getY")();
+
+// Print as string
+printVec(v1);
+printVec(v2);
+
+// Add two vectors, producing a third
+var v3 = v1("add")(v2);
+printVec(v3);
+
+// Chain: (3,4) + (1,2) + (10,10) = (14,16)
+var v4 = vec(10, 10);
+var v5 = v3("add")(v4);
+printVec(v5);
+
+// Compute length using sqrt native
+fun vecLen(v) {
+  var x = v("getX")();
+  var y = v("getY")();
+  return sqrt(x*x + y*y);
+}
+print vecLen(v1);
