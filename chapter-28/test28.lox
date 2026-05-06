@@ -1,0 +1,19 @@
+class Person {
+  init(name) {
+    this.name = name;
+  }
+  greet() {
+    print "Hello, I am " + this.name;
+  }
+}
+var p = Person("John Doe");
+p.greet();
+
+class Counter {
+  init() { this.count = 0; }
+  tick() { this.count = this.count + 1; return this.count; }
+}
+var c = Counter();
+print c.tick();
+print c.tick();
+print c.tick();
